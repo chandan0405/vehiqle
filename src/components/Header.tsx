@@ -1,4 +1,4 @@
-import { SignedIn } from '@clerk/nextjs';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
@@ -11,7 +11,6 @@ const Header = ({ isAdminPage = false }) => {
     <header className='fixed top-0 w-full bg-white/80 backdrop-blur-lg z-50 border-b'>
       <nav className='mx-auto px-4 py-4 flex justify-between items-center'>
         <Link href={isAdminPage ? "/admin" : '/'} className='flex'>
-
           <Image
             src={"/logo.png"}
             alt='logo'
@@ -60,6 +59,24 @@ const Header = ({ isAdminPage = false }) => {
                 }
               </SignedIn>
           }
+
+          <SignedOut>
+            <SignInButton forceRedirectUrl={"/"}>
+              <Button variant={"outline"}>
+                Login
+              </Button>
+            </SignInButton>
+          </SignedOut>
+
+          <SignedIn>
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "h-10 w-10"
+                }
+              }}
+            />
+          </SignedIn>
         </div>
       </nav>
     </header>

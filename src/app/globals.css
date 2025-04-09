@@ -116,7 +116,23 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+
+
+.dotted-background {
+  background-color: #16223c;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.28) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+
+@layer utilities {
+  .gradient-title {
+    @apply bg-gradient-to-r from-blue-500 to-green-500 text-transparent bg-clip-text
   }
 }
