@@ -15,7 +15,31 @@ const HomeSearchPage = () => {
   const [isImageUploading, setIsImageUploading] = useState(false);
   const router = useRouter();
 
+  const onDrop = (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image Size mist be less than 5MB");
+        return;
+      }
+      setIsImageUploading(true);
+      setSearchImage(file);
 
+      const fileReader = new FileReader();
+      fileReader.onloadend = () => {
+        if (typeof fileReader.result === 'string') {
+          setImagePreview(fileReader?.result);
+          setIsImageUploading(false);
+          toast.success("Image Uploaded successfully");
+        }
+      }
+      fileReader.onerror = () => {
+        setIsImageUploading(false);
+        toast.success("Failed to load the image")
+      }
+      fileReader.readAsDataURL(file);
+    }
+  }
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone(
     {
       onDrop,
