@@ -104,9 +104,10 @@ export async function processCarImageWithAI(file: File) {
   }
 }
 
-export async function addCar({ carData, Images }) {
+export async function addCar({ carData, images }) {
   try {
     const { userId } = await auth();
+    if (!userId) throw new Error("Unathorized");
     const user = await db.user.findUnique({
       where: {
         clerkUserId: userId,
@@ -122,11 +123,11 @@ export async function addCar({ carData, Images }) {
     const supabase = createClient(cookiesStore);
 
     const imageUrl = [];
-    for (let i = 0; i < Images.length; i++) {
-      const base64Data = Images[i];
+    for (let i = 0; i < images.length; i++) {
+      const base64Data = images[i];
 
       // Skip the image if data is not valid
-      if (!base64Data || !base64Data.startsWith("data:images/")) {
+      if (!base64Data || !base64Data.startsWith("data:image/")) {
         console.warn("Skipping invalid images data");
         continue;
       }
@@ -134,7 +135,7 @@ export async function addCar({ carData, Images }) {
       const base64 = base64Data.split(",")[1];
       const imageBuffer = Buffer.from(base64, "base64");
       // Deteremine the File Extension from the Data URL
-      const mimeMatch = base64Data.match("/data:image/([a-zA-Z]+);/");
+      const mimeMatch = base64Data.match("/data:image/([a-zA-Z0-9]+);/");
       const fileExtension = mimeMatch ? mimeMatch[1] : "jpeg";
 
       // create the FileName
@@ -143,10 +144,10 @@ export async function addCar({ carData, Images }) {
       const { data, error } = await supabase.storage
         .from("car-images")
         .upload(filePath, imageBuffer, {
-          contentType: `images/${fileExtension}`,
+          contentType: `image/${fileExtension}`,
         });
       if (error) {
-        console.error("Error uploading the image", error);
+        console.error("Error uploading image", error);
         throw new Error("Failed to Upload images : ", error.message);
       }
       const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-images/${filePath}`;
